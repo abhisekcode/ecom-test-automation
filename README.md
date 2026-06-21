@@ -1,12 +1,32 @@
 # E-Commerce Test Automation Framework
 
-## Overview
+[![CI](https://github.com/abhisekcode/ecom-test-automation/actions/workflows/regression.yml/badge.svg)](https://github.com/abhisekcode/ecom-test-automation/actions/workflows/regression.yml)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![Selenium](https://img.shields.io/badge/selenium-4.x-43B02A)
+![Pytest](https://img.shields.io/badge/pytest-9.x-0A9EDC)
 
-End-to-end test automation framework built with Python, Selenium, and Pytest. It demonstrates UI testing, API testing, database validation, and integration testing across all three layers, with cross-browser CI/CD execution via GitHub Actions.
+An end-to-end test automation framework against a live e-commerce demo app
+(SauceDemo), covering UI, API, and database layers in one suite, with a
+real CI/CD pipeline behind it - not just a script that runs locally.
 
-The framework follows the Page Object Model (POM), is safe to run under `pytest-xdist` (each worker gets its own SQLite file), and supports cross-browser execution across Chrome, Firefox, and Edge.
+## Why this is more than a Selenium tutorial clone
 
----
+* **Parallel-safe by design** - the SQLite persistence layer gives each
+  `pytest-xdist` worker its own database file, so `pytest -n auto` doesn't
+  race or corrupt state across workers.
+* **CI that actually gates on quality** - a `lint` job (Ruff + Black) has
+  to pass before the cross-browser test matrix even runs, and
+  `fail-fast: false` means one browser's failure never hides the other
+  two's results.
+* **Negative paths, not just happy paths** - invalid login, empty-cart
+  state, and API 404 handling are all covered, not just "click button,
+  assert success."
+* **Debugged with evidence, not guesses** - every fix in this repo's
+  history was reproduced and re-verified against the live app/API before
+  being called done, including a CI failure traced to a misencoded
+  `requirements.txt` and a failure-screenshot hook that was silently
+  swallowing real test failures behind an unrelated crash.
 
 ## Tech Stack
 
@@ -73,7 +93,7 @@ The framework follows the Page Object Model (POM), is safe to run under `pytest-
 ## Project Structure
 
 ```text
-ecom_test/
+ecom-test-automation/
 
 ├── .github/
 │   └── workflows/
@@ -117,11 +137,14 @@ ecom_test/
 
 ---
 
-## Setup
+## Quickstart
 
 ```bash
+git clone https://github.com/abhisekcode/ecom-test-automation.git
+cd ecom-test-automation
 pip install -r requirements-dev.txt   # runtime + lint/format tooling
 python setup_db.py                    # provisions the local SQLite cart table
+pytest -m smoke --headless
 ```
 
 ## Credentials
@@ -182,29 +205,26 @@ docker run --rm ecom-test
 
 GitHub Actions is configured to:
 
-* Run a `lint` job (ruff + black) that gates the test matrix
-* Execute Smoke Tests on Push / Pull Request
-* Execute Regression Tests on the nightly schedule
+* Run a `lint` job (Ruff + Black) that gates the test matrix
+* Execute smoke tests on push / pull request
+* Execute regression tests on the nightly schedule
 * Run across Chrome, Firefox, and Edge without one browser's failure cancelling the others
 * Upload the Allure results, HTML report, and failure screenshots as artifacts
 
 ---
 
-## Sample Test Coverage
+## Test Coverage
 
 ### UI Tests
-
 * Login validation (happy path + invalid credentials)
 * Add product to cart, cart verification
 * Empty-cart state
 
 ### API Tests
-
 * Product list retrieval
 * 404 handling for a non-existent product
 
 ### Integration Tests
-
 * UI action -> external API cross-check -> SQLite persistence, data-driven over `data/test_data.json`
 * DB-only cart-clearing validation
 
@@ -220,6 +240,6 @@ GitHub Actions is configured to:
 
 ## Author
 
-Abhishek Kumar
+**Abhishek Kumar** - [@abhisekcode](https://github.com/abhisekcode)
 
-Automation framework built for learning and demonstrating real-world QA automation, API testing, database validation, and CI/CD practices.
+Built to practice and demonstrate real-world QA automation, API testing, database validation, and CI/CD engineering.
