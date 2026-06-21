@@ -1,0 +1,14 @@
+# Test framework
+pytest==9.0.3
+pytest-xdist==3.8.0
+pytest-rerunfailures==16.2
+
+# Browser automation
+selenium==4.43.0
+
+# HTTP client for API tests
+requests==2.33.1
+
+# Reporting
+allure-pytest==2.16.0
+pytest-html==4.2.0
